@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}StudyMart{% endblock %}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'ico/fav.ico' %}" type="image/x-icon" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .navbar {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 1rem 0;
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.6rem;
+    }
+
+    footer {
+      background-color: #101418;
+      color: #ccc;
+      padding: 60px 0 30px;
+    }
+
+    .footer-logo h5 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .footer-logo p {
+      font-size: 0.95rem;
+      color: #aaa;
+    }
+
+    .footer-links h6 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .footer-links a {
+      display: block;
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: #ffc107;
+    }
+
+    .donate-section p {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+      <img src="{% static 'ico/fav.ico' %}" alt="favicon" width="24" height="24" style="border-radius: 4px;">
+      StudyMart
+    </a>
+
+    <div>
+      {% if user.is_authenticated %}
+        {% if user.is_seller %}
+          <a href="{% url 'dashboardSeller' %}" class="btn btn-outline-secondary me-2">Dashboard</a>
+        {% else %}
+          <a href="{% url 'dashboardBuyer' %}" class="btn btn-outline-secondary me-2">Dashboard</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'registerSeller' %}" class="btn btn-outline-primary me-2">Become a Seller</a>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="container my-5">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <!-- Main Footer Row -->
+    <div class="row">
+  <!-- Logo and About -->
+  <div class="col-12 col-md-4 mb-4 footer-logo">
+    <h5>
+      <img src="{% static 'ico/fav.ico' %}" width="26" height="26" class="me-2" style="border-radius: 5px;">
+      STUDYMART
+    </h5>
+    <p>
+      StudyMart is your trusted platform for verified, affordable, and high-quality study materials, designed to empower students and educators across India.
+    </p>
+  </div>
+
+  <!-- Row 1: Company & Support -->
+  <div class="col-6 col-md-2 mb-4 footer-links">
+    <h6>Company</h6>
+    <a href="#">About Us</a>
+    <a href="#">Careers</a>
+    <a href="#">Blogs</a>
+  </div>
+
+  <div class="col-6 col-md-2 mb-4 footer-links">
+    <h6>Support</h6>
+    <a href="#">FAQs</a>
+    <a href="#">Help Center</a>
+    <a href="#">Report Issue</a>
+  </div>
+
+  <!-- Row 2: Legal & Contact -->
+  <div class="col-6 col-md-2 mb-4 footer-links">
+    <h6>Legal</h6>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+    <a href="#">Refund Policy</a>
+  </div>
+
+  <div class="col-6 col-md-2 mb-4 footer-links">
+    <h6>Contact</h6>
+    <a href="#">Contact Us</a>
+    <a href="#">Email Us</a>
+    <a href="#">Partner With Us</a>
+  </div>
+</div>
+
+    <!-- Donate Section: Separate Line, Right-Aligned -->
+    <div class="row">
+      <div class="col-12">
+        <div class="donate-section text-end">
+          <img src="{% static 'images/donate1.jpg' %}" alt="Donate Image" style="max-width: 100px; height: auto;" class="mb-2"><br>
+          <a href="https://razorpay.me/@sagarbhowmik" class="btn btn-warning btn-sm px-4 rounded-pill">Donate</a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom text-center">
+      &copy; {% now "Y" %} StudyMart. All rights reserved.
+      <br />
+      Developed by <strong style="color: #ffc107;">ALPHABETS LAB</strong>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,225 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Seller Dashboard | StudyMart{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f6f9;
+  }
+
+  .dashboard-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #4a11cb;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .card-custom {
+    background-color: #fff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-upload {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s ease;
+  }
+
+  .btn-upload:hover {
+    background: linear-gradient(90deg, #2575fc, #6a11cb);
+  }
+
+  .price-badge {
+    background-color: #e9ecef;
+    border-radius: 20px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .modal-sm {
+    max-width: 460px;
+  }
+
+  .modal-content .form-control {
+    font-size: 0.9rem;
+    padding: 0.375rem 0.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="dashboard-heading">Welcome, {{ user.full_name }} 👩‍🏫</h1>
+
+  <!-- Weekly Earnings Summary -->
+  <div class="row mb-4">
+    <div class="col-md-6 offset-md-3">
+      <div class="card card-custom text-center">
+        <h5 class="mb-2">Weekly Earnings</h5>
+        <p class="mb-1">This Week: <strong class="text-success">₹{{ earnings_this_week }}</strong></p>
+        <p class="mb-0 text-muted">Last Week: ₹{{ earnings_last_week }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uploaded Materials -->
+  <div class="card card-custom mb-4">
+  <h4 class="mb-4">Your Uploaded Materials</h4>
+  {% if materials %}
+  <ul class="list-group list-group-flush">
+    {% for material in materials %}
+    <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+      <div class="flex-grow-1">
+        <strong>{{ material.title }}</strong><br>
+        <small class="text-muted d-block">{{ material.description|truncatechars:60 }}</small>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2">₹{{ material.price }}</span>
+        <a class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ material.id }}">Edit</a>
+      </div>
+    </li>
+
+    <!-- Update Modal -->
+    <div class="modal fade" id="updateModal{{ material.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ material.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content p-3">
+          <form method="post" action="{% url 'update' material.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-header border-0 pb-1">
+              <h5 class="modal-title" id="updateModalLabel{{ material.id }}">Update Material</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="title{{ material.id }}" class="form-label">Title</label>
+                  <input type="text" name="title" id="title{{ material.id }}" value="{{ material.title }}" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                  <label for="price{{ material.id }}" class="form-label">Price (₹)</label>
+                  <input type="number" name="price" id="price{{ material.id }}" value="{{ material.price }}" class="form-control" required />
+                </div>
+                <div class="col-12">
+                  <label for="desc{{ material.id }}" class="form-label">Description</label>
+                  <textarea name="description" id="desc{{ material.id }}" rows="3" class="form-control" required>{{ material.description }}</textarea>
+                </div>
+                <div class="col-md-6">
+                  <label for="file{{ material.id }}" class="form-label">File</label>
+                  <input type="file" name="file" id="file{{ material.id }}" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                  <label for="banner{{ material.id }}" class="form-label">Banner</label>
+                  <input type="file" name="banner" id="banner{{ material.id }}" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer border-0 pt-3 pb-2 justify-content-center">
+              <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">You haven’t uploaded any study materials yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Recent Sales -->
+  <div class="card card-custom mt-5">
+    <h4 class="mb-4">Recent Sales (Last 10)</h4>
+    {% if sales %}
+    <ul class="list-group list-group-flush">
+      {% for purchase in sales %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ purchase.material.title }}</strong><br>
+          <small class="text-muted d-block">
+            <div class="d-flex flex-wrap gap-2">
+              <div><strong>{{ purchase.buyer.full_name }}</strong></div>
+              <div>📞 {{ purchase.buyer.userprofile.phone_number|default:"N/A" }}</div>
+              <div>✉️ {{ purchase.buyer.email|default:"N/A" }}</div>
+              <div>🕒 {{ purchase.created_at|date:"M d, Y" }}</div>
+            </div>
+          </small>
+        </div>
+        <div class="text-end">
+          <span class="price-badge me-2">₹{{ purchase.material.price }}</span>
+          {% if purchase.is_paid %}
+          <span class="badge bg-success">Paid</span>
+          {% else %}
+          <span class="badge bg-warning text-dark">Unpaid</span>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No recent sales yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Upload Button -->
+  <div class="text-center mt-5">
+    <a href="#" class="btn btn-upload px-4" data-bs-toggle="modal" data-bs-target="#uploadModal">
+      + Upload New Material
+    </a>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content p-3">
+      <form method="post" action="{% url 'upload' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title" id="uploadModalLabel">Upload New Material</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <div class="row g-2">
+            <div class="col-6">
+              {{ form.title.label_tag }} {{ form.title }}
+            </div>
+            <div class="col-6">
+              {{ form.price.label_tag }} {{ form.price }}
+            </div>
+            <div class="col-12">
+              {{ form.description.label_tag }} {{ form.description }}
+            </div>
+            <div class="col-6">
+              {{ form.file.label_tag }} {{ form.file }}
+            </div>
+            <div class="col-6">
+              {{ form.banner.label_tag }} {{ form.banner }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-3 pb-2 justify-content-center">
+          <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

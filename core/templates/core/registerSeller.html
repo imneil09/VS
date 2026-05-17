@@ -1,0 +1,198 @@
+{% extends "core/base.html" %}
+
+{% block title %}Become a Seller | StudyMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+  }
+
+  .registerSeller-page {
+    max-width: 520px;
+    margin: 4rem auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .registerSeller-page h1 {
+    font-weight: 800;
+    font-size: 2.2rem;
+    text-align: center;
+    color: #2575fc;
+    margin-bottom: 0.4rem;
+  }
+
+  .registerSeller-page p.subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  form .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  form .form-group {
+    flex: 1 1 calc(50% - 0.5rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  form .form-group-full {
+    flex: 1 1 100%;
+  }
+
+  form label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  form input {
+    padding: 0.65rem 0.9rem;
+    border-radius: 10px;
+    border: 1.8px solid #ddd;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    width: 100%;
+  }
+
+  form input:focus {
+    outline: none;
+    border-color: #2575fc;
+    box-shadow: 0 0 8px rgba(37, 117, 252, 0.25);
+  }
+
+  .btn-submit {
+    margin-top: 1.5rem;
+    width: 100%;
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .btn-submit:hover {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+  }
+
+  .login-text-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: #444;
+  }
+
+  .login-text-link a {
+    color: #2575fc;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .login-text-link a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 576px) {
+    .form-row {
+      flex-direction: column;
+    }
+
+    .form-group {
+      flex: 1 1 100%;
+    }
+
+    .registerSeller-page {
+      padding: 2rem 1.5rem;
+      margin: 3rem 1rem;
+    }
+
+    .registerSeller-page h1 {
+      font-size: 1.8rem;
+    }
+  }
+
+  .form-errors {
+    color: red;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registerSeller-page">
+  <h1>Become a Seller</h1>
+  <p class="subtitle">Join as a verified educator and sell your smart study materials on StudyMart.</p>
+
+  <form method="post" action="{% url 'registerSeller' %}">
+    {% csrf_token %}
+    {{ form.is_seller.as_hidden }}
+
+    {% if form.errors %}
+      <div class="form-errors">
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="{{ form.full_name.id_for_label }}">Full Name *</label>
+        {{ form.full_name }}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">Email *</label>
+        {{ form.email }}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.phone.id_for_label }}">Phone *</label>
+        {{ form.phone }}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">Password *</label>
+        {{ form.password1 }}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">Confirm Password *</label>
+        {{ form.password2 }}
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">Apply Registration</button>
+  </form>
+
+  <p class="login-text-link">
+    Already registered? <a href="{% url 'login' %}">Login</a>
+  </p>
+</div>
+{% endblock %}

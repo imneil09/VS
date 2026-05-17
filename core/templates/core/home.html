@@ -1,0 +1,179 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  .hero-banner {
+    background: url("{% static 'images/banner1.jpg' %}") no-repeat center center / cover;
+    border-radius: 16px;
+    min-height: 50vh;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    padding: 50px 20px;
+    text-align: center;
+    color: white;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+    margin-top: 10px;
+  }
+
+  .btn-hero {
+    margin-top: 25px;
+    background: white;
+    color: #111827;
+    border: none;
+    padding: 10px 28px;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-hero:hover {
+    background: #2563eb;
+    color: white;
+  }
+
+  .materials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+  }
+
+  .material-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+
+  .material-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .material-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .material-body {
+    padding: 15px;
+  }
+
+  .material-body h5 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .material-body p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 12px;
+  }
+
+  .material-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .price {
+    font-weight: bold;
+    color: #2563eb;
+  }
+
+  .btn-buy {
+    font-size: 0.85rem;
+    padding: 5px 16px;
+    border-radius: 20px;
+  }
+
+  @media (max-width: 576px) {
+    .hero-content h1 {
+      font-size: 1.8rem;
+    }
+
+    .hero-content p {
+      font-size: 1rem;
+    }
+
+    .materials-grid {
+      gap: 16px;
+    }
+
+    .material-card img {
+      height: 150px;
+    }
+
+    .material-body {
+      padding: 12px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner mb-5">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Find the Perfect Study Material</h1>
+      <p>Curated by top educators. Verified. Affordable. Ready to boost your results.</p>
+      <a href="{% url 'materials' %}" class="btn btn-hero">Explore Now</a>
+    </div>
+  </div>
+
+  <!-- Section Title -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">🔥 Trending</h2>
+    <p class="text-muted">Updated regularly with new and trending content</p>
+  </div>
+
+  <!-- Material Grid -->
+  <div class="materials-grid">
+    {% for material in materials %}
+      <div class="material-card">
+        <img src="{{ material.banner.url }}" alt="{{ material.title }}">
+        <div class="material-body">
+          <h5>{{ material.title }}</h5>
+          <p>{{ material.description|truncatechars:80 }}</p>
+          <div class="material-footer">
+            <span class="price">₹{{ material.price }}</span>
+            <a href="{% url 'checkout' material.pk %}" class="btn btn-outline-primary btn-sm btn-buy">Buy Now</a>
+          </div>
+          <small class="text-muted d-block mt-2">By {{ material.seller.user.username }}</small>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center">No study materials found. Please check back later!</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

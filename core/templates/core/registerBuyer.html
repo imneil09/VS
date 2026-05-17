@@ -1,0 +1,214 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Register | StudyMart{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #2575fc, #6a11cb) !important;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .register-box {
+    max-width: 560px;
+    margin: 4rem auto;
+    background: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+    animation: fadeIn 0.7s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .register-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .register-header i {
+    font-size: 2.5rem;
+    color: #6a11cb;
+  }
+
+  .register-header h2 {
+    font-weight: 800;
+    font-size: 2rem;
+    color: #2575fc;
+    margin: 0;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.3rem;
+  }
+
+  input {
+    font-size: 0.95rem;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    border: 1.8px solid #ddd;
+    transition: border-color 0.3s ease;
+  }
+
+  input:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 8px rgba(37, 117, 252, 0.25);
+    outline: none;
+  }
+
+  .btn-register {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+    color: white;
+    font-weight: 700;
+    padding: 12px;
+    width: 100%;
+    border-radius: 50px;
+    border: none;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .btn-register:hover {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+  }
+
+  .text-center a {
+    font-weight: 600;
+    color: #2575fc;
+    text-decoration: none;
+  }
+
+  .text-center a:hover {
+    text-decoration: underline;
+  }
+
+  .alert {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .field-error {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+
+  @media (max-width: 576px) {
+    .form-row {
+      flex-direction: column;
+    }
+
+    .register-header h2 {
+      font-size: 1.7rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-box">
+  <div class="register-header">
+    <i class="bi bi-person-plus-fill"></i>
+    <h2>Create Account</h2>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+
+    <!-- Full Name -->
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.full_name.label_tag }}
+        {{ form.full_name }}
+        {% for error in form.full_name.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Email + Phone -->
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {% for error in form.email.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.phone.label_tag }}
+        {{ form.phone }}
+        {% for error in form.phone.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Password + Confirm -->
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+        {% for error in form.password1.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+        {% for error in form.password2.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <button type="submit" class="btn-register">Register</button>
+  </form>
+
+  <p class="mt-4 text-center">
+    Already registered? <a href="{% url 'login' %}">Login</a>
+  </p>
+</div>
+{% endblock %}

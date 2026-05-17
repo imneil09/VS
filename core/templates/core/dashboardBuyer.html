@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | StudyMart{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f6f9;
+  }
+
+  .dashboard-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #4a11cb;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .card-custom {
+    background-color: #fff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .card-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 1.25rem 1rem;
+  }
+
+  .material-info strong {
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .material-info small {
+    color: #6c757d;
+  }
+
+  .btn-download {
+    border-radius: 30px;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-download:hover {
+    background-color: #198754;
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="dashboard-heading">Hello, {{ user.full_name }} 📚</h2>
+
+  <div class="card card-custom mb-4">
+    <h5 class="mb-4">Your Purchased Materials</h5>
+    {% if purchases %}
+    <ul class="list-group list-group-flush">
+      {% for item in purchases %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="material-info">
+          <strong>{{ item.material.title }}</strong><br>
+          <small>Purchased: {{ item.created_at|date:"d M Y" }}</small>
+        </div>
+        <a href="{{ item.material.file.url }}" class="btn btn-sm btn-outline-success btn-download" target="_blank" download>Download</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">You haven't purchased any materials yet.</p>
+    {% endif %}
+    <div class="text-center mt-4">
+      <a href="{% url 'materials' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-search"></i> Browse  Materials
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

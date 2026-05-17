@@ -1,0 +1,218 @@
+{% extends "core/base.html" %}
+{% block title %}{{ material.title }} | StudyMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background: linear-gradient(135deg, #e0ecff, #ffffff);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .glass-card {
+    backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 1080px;
+    margin: 60px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .glass-card img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .material-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #222;
+  }
+
+  .price-badge {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2575fc;
+    margin-bottom: 14px;
+  }
+
+  .meta-tags span {
+    display: inline-block;
+    background: #edf1fc;
+    color: #333;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 30px;
+    margin: 4px 6px 12px 0;
+    font-weight: 500;
+  }
+
+  .material-description {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+
+  .btn-buy-now {
+    display: inline-block;
+    padding: 12px 36px;
+    font-size: 1rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 10px 20px rgba(38, 91, 232, 0.3);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-buy-now:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(38, 91, 232, 0.4);
+  }
+
+  .seller-profile {
+    background: #f9f9f9;
+    border-left: 5px solid #2575fc;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  .seller-profile h5 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .seller-profile p {
+    margin: 3px 0;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .glass-card {
+      grid-template-columns: 1fr;
+      padding: 2rem;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+
+  <!-- Left Side: Banner Image -->
+  <div>
+    {% if material.banner %}
+      <img src="{{ material.banner.url }}" alt="{{ material.title }}">
+    {% else %}
+      <img src="https://placehold.co/600x400?text={{ material.title|urlencode }}" alt="{{ material.title }}">
+    {% endif %}
+  </div>
+
+  <!-- Right Side: Material Info -->
+  <div>
+    <h1 class="material-title">{{ material.title }}</h1>
+    <div class="price-badge">
+      {% if material.price == 0 %}
+        Free
+      {% else %}
+        ₹{{ material.price|floatformat:2 }}
+      {% endif %}
+    </div>
+
+    <div class="meta-tags">
+      <span>📅 {{ material.uploaded_at|date:"M d, Y" }}</span>
+      <span>📁 ZIP File</span>
+      <span>📘 Subject: {{ material.seller.subject|default:"N/A" }}</span>
+    </div>
+
+    <div class="material-description">
+      {{ material.description|linebreaks }}
+    </div>
+     
+    {% if not request.user.is_seller and not request.user.is_superuser %}
+      {% if is_already_purchased %}
+        <a href="{{ material.file.url }}" class="btn-buy-now" target="_blank">Download Now</a>
+      {% else %}
+        <button id="payBtn" class="btn-buy-now">Pay Now</button>
+      {% endif %}
+    {% endif %}
+
+    <!-- Seller Info -->
+    <div class="seller-profile mt-4">
+      <h5>👨‍🏫 About the Seller</h5>
+      <p><strong>Name:</strong> {{ material.seller.user.full_name }}</p>
+      <p><strong>Qualification:</strong> {{ material.seller.qualification|default:"N/A" }}</p>
+      <p><strong>Experience:</strong> {{ material.seller.experience }} years</p>
+      <p><strong>Bio:</strong> {{ material.seller.bio|linebreaks }}</p>
+    </div>
+  </div>
+
+</div>
+
+{% if not is_already_purchased %}
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "order_id": "{{ order_id }}",
+    "name": "StudyMart",
+    "description": "{{ material.title }}",
+    "handler": function (response){
+        fetch("{% url 'verify_payment' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify(response)
+        }).then(res => res.json()).then(data => {
+            if(data.status === "success") {
+                window.location.href = "{% url 'dashboardBuyer' %}";
+            } else {
+                alert("Payment verification failed");
+            }
+        });
+    },
+    "theme": {
+        "color": "#2575fc"
+    }
+};
+
+var rzp = new Razorpay(options);
+document.getElementById('payBtn').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+};
+</script>
+{% endif %}
+{% endblock %}
