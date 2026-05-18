@@ -4,135 +4,329 @@
 
 {% block extra_css %}
 <style>
-  .hero-banner {
-    background: url("{% static 'images/banner1.jpg' %}") no-repeat center center / cover;
-    border-radius: 16px;
-    min-height: 50vh;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 40px;
+  /* --- KICKASS UI THEME VARIABLES --- */
+  :root {
+    --brand-primary: #4f46e5;
+    --brand-secondary: #ec4899;
+    --bg-light: #f8fafc;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --card-bg: #ffffff;
   }
 
-  .hero-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.55);
+  body {
+    background-color: var(--bg-light);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* --- MODERN HERO SECTION --- */
+  .hero-banner {
+    position: relative;
+    background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), url("{% static 'images/banner1.jpg' %}") no-repeat center center / cover;
+    border-radius: 24px;
+    min-height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   }
 
   .hero-content {
     position: relative;
-    z-index: 1;
-    padding: 50px 20px;
+    z-index: 2;
+    padding: 0 20px;
     text-align: center;
     color: white;
+    max-width: 800px;
   }
 
   .hero-content h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #ffffff, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .hero-content p {
-    font-size: 1.1rem;
-    margin-top: 10px;
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    margin-bottom: 35px;
+    font-weight: 400;
   }
 
   .btn-hero {
-    margin-top: 25px;
-    background: white;
-    color: #111827;
+    background: linear-gradient(135deg, var(--brand-primary), #6366f1);
+    color: white;
     border: none;
-    padding: 10px 28px;
-    font-weight: 600;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
     border-radius: 50px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    text-decoration: none;
   }
 
   .btn-hero:hover {
-    background: #2563eb;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 25px rgba(79, 70, 229, 0.4);
     color: white;
+  }
+
+  /* --- PREMIUM MATERIAL CARDS --- */
+  .section-title h2 {
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 2rem;
+    letter-spacing: -0.5px;
   }
 
   .materials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 20px; /* Reduced to make room for the View More button */
   }
 
   .material-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
     overflow: hidden;
-    transition: transform 0.2s ease;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* CENTERING LOGIC: If there is only ONE material card, center it! */
+  .material-card:only-child {
+    grid-column: 1 / -1;      /* Take up the whole row */
+    justify-self: center;     /* Center yourself in that row */
+    width: 100%;
+    max-width: 400px;         /* Don't stretch too wide */
   }
 
   .material-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+  }
+
+  .card-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
   }
 
   .material-card img {
     width: 100%;
-    height: 180px;
+    height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .material-card:hover img {
+    transform: scale(1.05);
+  }
+
+  /* Glassmorphism Price Tag */
+  .price-tag {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    color: var(--text-main);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
 
   .material-body {
-    padding: 15px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   .material-body h5 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    line-height: 1.4;
   }
 
   .material-body p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 12px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+    flex-grow: 1;
   }
 
   .material-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #f1f5f9;
   }
 
-  .price {
+  .seller-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Cool initial avatar generator */
+  .seller-avatar {
+    width: 28px;
+    height: 28px;
+    background: #e0e7ff;
+    color: var(--brand-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
-    color: #2563eb;
+    font-size: 0.8rem;
   }
 
   .btn-buy {
-    font-size: 0.85rem;
-    padding: 5px 16px;
-    border-radius: 20px;
+    background: var(--text-main);
+    color: white;
+    font-size: 0.9rem;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.2s;
+    text-decoration: none;
   }
 
-  @media (max-width: 576px) {
-    .hero-content h1 {
-      font-size: 1.8rem;
-    }
+  .btn-buy:hover {
+    background: var(--brand-primary);
+    color: white;
+    transform: scale(1.05);
+  }
 
-    .hero-content p {
-      font-size: 1rem;
-    }
+  /* --- VIEW MORE BUTTON (Left Aligned) --- */
+  .btn-view-more {
+    display: inline-block;
+    color: var(--brand-primary);
+    background: white;
+    border: 2px solid var(--brand-primary);
+    padding: 10px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
 
-    .materials-grid {
-      gap: 16px;
-    }
+  .btn-view-more:hover {
+    background: var(--brand-primary);
+    color: white;
+    box-shadow: 0 8px 15px rgba(79, 70, 229, 0.2);
+    transform: translateX(5px);
+  }
 
-    .material-card img {
-      height: 150px;
-    }
+  /* --- UPCOMING FEATURES SECTION --- */
+  .coming-soon-section {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-radius: 24px;
+    padding: 60px 40px;
+    margin-bottom: 60px;
+    text-align: center;
+    border: 1px dashed #cbd5e1;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  }
 
-    .material-body {
-      padding: 12px;
-    }
+  .coming-soon-section h2 {
+    font-weight: 900;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 45px;
+  }
+
+  .feature-box {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    text-align: left;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-box:hover {
+    transform: translateY(-6px);
+  }
+
+  .feature-icon {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+  }
+
+  .feature-box h4 {
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .feature-box p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .badge-coming-soon {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    background: #ef4444; /* Vibrant Red */
+    color: white;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    border-radius: 30px;
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-content h1 { font-size: 2.2rem; }
+    .hero-banner { min-height: 40vh; border-radius: 16px; margin-top: 10px; padding: 40px 10px; }
+    .materials-grid, .features-grid { grid-template-columns: 1fr; gap: 20px; }
+    .coming-soon-section { padding: 40px 20px; }
   }
 </style>
 {% endblock %}
@@ -140,40 +334,87 @@
 {% block content %}
 <div class="container">
 
-  <!-- Hero Banner -->
-  <div class="hero-banner mb-5">
-    <div class="hero-overlay"></div>
+  <div class="hero-banner">
     <div class="hero-content">
-      <h1>Find the Perfect Study Material</h1>
-      <p>Curated by top educators. Verified. Affordable. Ready to boost your results.</p>
-      <a href="{% url 'materials' %}" class="btn btn-hero">Explore Now</a>
+      <h1>Master Your Exams with Premium Study Materials</h1>
+      <p>Download verified notes, PDFs, and guides curated by top educators. Instant access to boost your results today.</p>
+      <a href="{% url 'materials' %}" class="btn-hero">Explore Library</a>
     </div>
   </div>
 
-  <!-- Section Title -->
-  <div class="text-center mb-4">
-    <h2 class="fw-bold">🔥 Trending</h2>
-    <p class="text-muted">Updated regularly with new and trending content</p>
+  <div class="section-title text-center mb-5">
+    <h2>🔥 Trending Right Now</h2>
+    <p class="text-muted" style="font-size: 1.1rem;">The most downloaded content this week</p>
   </div>
 
-  <!-- Material Grid -->
   <div class="materials-grid">
     {% for material in materials %}
       <div class="material-card">
-        <img src="{{ material.banner.url }}" alt="{{ material.title }}">
+        
+        <div class="card-img-wrapper">
+          <img src="{{ material.banner.url }}" alt="{{ material.title }}">
+          <div class="price-tag">₹{{ material.price }}</div>
+        </div>
+
         <div class="material-body">
           <h5>{{ material.title }}</h5>
           <p>{{ material.description|truncatechars:80 }}</p>
+          
           <div class="material-footer">
-            <span class="price">₹{{ material.price }}</span>
-            <a href="{% url 'checkout' material.pk %}" class="btn btn-outline-primary btn-sm btn-buy">Buy Now</a>
+            <div class="seller-info">
+              <div class="seller-avatar">
+                {{ material.seller.user.username|make_list|first|upper }}
+              </div>
+              <span>{{ material.seller.user.username }}</span>
+            </div>
+            
+            <a href="{% url 'checkout' material.pk %}" class="btn-buy">Buy Now</a>
           </div>
-          <small class="text-muted d-block mt-2">By {{ material.seller.user.username }}</small>
         </div>
+
       </div>
     {% empty %}
-      <p class="text-center">No study materials found. Please check back later!</p>
+      <div class="col-12 text-center py-5" style="grid-column: 1 / -1; background: white; border-radius: 20px; border: 2px dashed #cbd5e1;">
+        <h4 style="color: #64748b; font-weight: 700;">No study materials found.</h4>
+        <p class="text-muted">Teachers are uploading new content. Please check back later!</p>
+      </div>
     {% endfor %}
+  </div>
+
+  {% if materials|length > 0 %}
+  <div class="text-end mb-5 pb-3">
+    <a href="{% url 'materials' %}" class="btn-view-more">
+      View All
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="coming-soon-section">
+    <h2>A New Learning Experience is Coming</h2>
+    <p class="text-muted" style="font-size: 1.15rem; max-width: 600px; margin: 0 auto;">We are upgrading VidyaSetu into a complete Teacher Education Learning Platform!</p>
+    
+    <div class="features-grid">
+      <div class="feature-box">
+        <span class="badge-coming-soon">Coming Soon</span>
+        <div class="feature-icon">🎓</div>
+        <h4>Premium Super Courses</h4>
+        <p>Enroll in complete courses with structured curriculums, assignments, and guided learning from top educators in your region.</p>
+      </div>
+
+      <div class="feature-box">
+        <span class="badge-coming-soon">Coming Soon</span>
+        <div class="feature-icon">🔴</div>
+        <h4>Live & Recorded Classes</h4>
+        <p>Join interactive live sessions with teachers or watch high-quality recorded video lectures anytime from your personal dashboard.</p>
+      </div>
+
+      <div class="feature-box">
+        <span class="badge-coming-soon">Coming Soon</span>
+        <div class="feature-icon">💳</div>
+        <h4>Flexible Subscriptions</h4>
+        <p>Choose exactly how you want to learn! Buy full courses at once or subscribe monthly/yearly for continuous, unlimited access.</p>
+      </div>
+    </div>
   </div>
 
 </div>
