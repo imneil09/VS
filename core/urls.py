@@ -9,12 +9,12 @@ urlpatterns = [
     # Authentication
     path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
-    path('registerSeller/', views.registerSeller, name='registerSeller'),
-    path('registerBuyer/', views.registerBuyer, name='registerBuyer'),
+    path('registerTeacher/', views.registerSeller, name='registerSeller'),
+    path('registerStudent/', views.registerBuyer, name='registerBuyer'),
 
     # Dashboards
-    path('dashboardSeller/', views.dashboardSeller, name='dashboardSeller'),
-    path('dashboardBuyer/', views.dashboardBuyer, name='dashboardBuyer'),
+    path('dashboardTeacher/', views.dashboardSeller, name='dashboardSeller'),
+    path('dashboardStudent/', views.dashboardBuyer, name='dashboardBuyer'),
 
     # Study materials
     path('materials/', views.materials, name='materials'),
